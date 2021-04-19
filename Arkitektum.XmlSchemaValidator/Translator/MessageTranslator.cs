@@ -8,18 +8,21 @@ namespace Arkitektum.XmlSchemaValidator.Translator
         public static string TranslateError(string message)
         {
             if (Translate(message, Translations.InvalidChild, out var translation))
-                return translation + AddOtherElements(message) + ".";
+                return $"{translation}{AddListOfPossibleElements(message)}.{AddOtherElements(message)}.";
 
             if (Translate(message, Translations.IncompleteContent, out translation))
-                return translation + AddOtherElements(message) + ".";
-           
+                return $"{translation}{AddListOfPossibleElements(message)}.{AddOtherElements(message)}.";
+
             if (Translate(message, Translations.CannotContainText, out translation))
-                return translation + AddOtherElements(message) + ".";
+                return $"{translation}{AddListOfPossibleElements(message)}.{AddOtherElements(message)}.";
 
             if (Translate(message, Translations.EnumerationConstraintFailed, out translation))
                 return translation;
 
             if (Translate(message, Translations.TextOnly, out translation))
+                return translation;
+
+            if (Translate(message, Translations.AttributeNotEqualFixedValue, out translation))
                 return translation;
 
             if (Translate(message, Translations.TagMismatch, out translation))
@@ -46,6 +49,17 @@ namespace Arkitektum.XmlSchemaValidator.Translator
                 return translation;
 
             return message;
+        }
+
+        private static string AddListOfPossibleElements(string message)
+        {
+            var translation = string.Empty;
+            var matches = Translations.ListOfPossibleElements.Regex.Matches(message);
+
+            foreach (Match match in matches)
+                translation += FormatMessage(Translations.ListOfPossibleElements.Template, match);
+
+            return translation;
         }
 
         private static string AddOtherElements(string message)

@@ -101,6 +101,7 @@ namespace Arkitektum.XmlSchemaValidator.Provider
         {
             var xmlSchemaSet = new XmlSchemaSet { XmlResolver = new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) };
             var xmlSchema = XmlSchema.Read(stream, null);
+            stream.Seek(0, SeekOrigin.Begin);
 
             xmlSchemaSet.Add(xmlSchema);
 
