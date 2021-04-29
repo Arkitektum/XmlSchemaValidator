@@ -10,14 +10,14 @@ namespace Arkitektum.XmlSchemaValidator.Config
 {
     public static class ValidatorConfig
     {
-        public static void AddXsdValidator(this IServiceCollection services, Action<XsdValidatorOptions> options)
+        public static void AddXmlSchemaValidator(this IServiceCollection services, Action<XsdValidatorOptions> options)
         {
             services.Configure(options);
             services.AddSingleton<IXmlSchemaSetProvider, XmlSchemaSetProvider>();
             services.AddTransient<IXmlSchemaValidator, SchemaValidator>();
         }
 
-        public static void UseXsdValidator(this IApplicationBuilder app)
+        public static void UseXmlSchemaValidator(this IApplicationBuilder app)
         {
             var provider = app.ApplicationServices.GetService<IXmlSchemaSetProvider>();
             provider.CreateSchemaSets();

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Xml.Schema;
 
 namespace Arkitektum.XmlSchemaValidator.Provider
@@ -80,6 +81,9 @@ namespace Arkitektum.XmlSchemaValidator.Provider
 
         private void DeleteSchemaSets(string path)
         {
+            if (!_options.CacheFiles)
+                return;
+
             try
             {
                 if (!Directory.Exists(path))
@@ -99,7 +103,8 @@ namespace Arkitektum.XmlSchemaValidator.Provider
 
         private XmlSchemaSet CreateSchemaSet(string key, Stream stream)
         {
-            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) };
+            var xmlResolver = _options.CacheFiles ? new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) : new XmlUrlResolver();
+            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = xmlResolver };
             var xmlSchema = XmlSchema.Read(stream, null);
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -110,7 +115,8 @@ namespace Arkitektum.XmlSchemaValidator.Provider
 
         private XmlSchemaSet CreateSchemaSet(string key, string targetNamespace, string schemaUri)
         {
-            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) };
+            var xmlResolver = _options.CacheFiles ? new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) : new XmlUrlResolver();
+            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = xmlResolver };
 
             xmlSchemaSet.Add(targetNamespace, schemaUri);
 

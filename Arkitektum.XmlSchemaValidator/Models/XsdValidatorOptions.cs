@@ -9,7 +9,8 @@ namespace Arkitektum.XmlSchemaValidator.Models
         public Dictionary<string, Stream> SchemaStreams { get; } = new Dictionary<string, Stream>();        
         public Dictionary<string, (string TargetNamespace, string SchemaUri)> SchemaUris { get; } = new Dictionary<string, (string, string)>();
         public int CacheDurationDays { get; set; } = 30;
-        public string CacheFilesPath { get; set; } = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+        public string CacheFilesPath { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        public bool CacheFiles { get; set; } = true;
 
         public void AddSchema(string key, Stream xsdStream)
         {
