@@ -17,9 +17,29 @@
             "Elementet '{element}' i navneområdet '{ns}' kan ikke inneholde tekst."
         );
 
-        public static Translation EnumerationConstraintFailed = new(
-            @"^The '(?<element>[^ ]*)' element is invalid - The value '(?<value>.*?)' is invalid according to its datatype '(?<datatype>.*?)'",
-            "Elementet {element} er ugyldig. Verdien '{value}' er ugyldig i henhold til dens datatype {datatype}. Oppregningsbegrensningen feilet."
+        public static Translation InvalidElement = new(
+            @"^The '(?<element>[^ ]*)' element is invalid",
+            "Elementet '{element}' er ugyldig."
+        );
+
+        public static Translation InvalidAttribute = new(
+            @"^The '(?<attr>[^ ]*)' attribute is invalid",
+            "Attributtet '{attr}' er ugyldig."
+        );
+
+        public static Translation InvalidValue = new(
+            @" - The value '(?<value>.*?)' is invalid according to its datatype '(?<datatype>.*?)'",
+            " Verdien '{value}' er ugyldig i henhold til dens datatype '{datatype}'."
+        );
+
+        public static Translation InvalidCharacter = new(
+            @" - The '(?<character>.*?)' character, hexadecimal value (?<hexValue>.*), cannot be included in a name.",
+            " Tegnet '{character}', heksadesimalverdi {hexValue}, kan ikke brukes som navn."
+        );
+
+        public static Translation RequiredAttributeMissing = new(
+            @"^The required attribute '(?<attr>[^ ]*)' is missing.",
+            "Det obligatoriske attributtet '{attr}' mangler."
         );
 
         public static Translation TextOnly = new(

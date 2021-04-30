@@ -8,15 +8,21 @@ namespace Arkitektum.XmlSchemaValidator.Translator
         public static string TranslateError(string message)
         {
             if (Translate(message, Translations.InvalidChild, out var translation))
-                return $"{translation}{AddListOfPossibleElements(message)}.{AddOtherElements(message)}.";
+                return $"{translation}{AddTranslations(message, Translations.ListOfPossibleElements)}.{AddTranslations(message, Translations.OtherElements)}.";
 
             if (Translate(message, Translations.IncompleteContent, out translation))
-                return $"{translation}{AddListOfPossibleElements(message)}.{AddOtherElements(message)}.";
+                return $"{translation}{AddTranslations(message, Translations.ListOfPossibleElements)}.{AddTranslations(message, Translations.OtherElements)}.";
 
             if (Translate(message, Translations.CannotContainText, out translation))
-                return $"{translation}{AddListOfPossibleElements(message)}.{AddOtherElements(message)}.";
+                return $"{translation}{AddTranslations(message, Translations.ListOfPossibleElements)}.{AddTranslations(message, Translations.OtherElements)}.";
 
-            if (Translate(message, Translations.EnumerationConstraintFailed, out translation))
+            if (Translate(message, Translations.InvalidElement, out translation))
+                return $"{translation}{AddTranslation(message, Translations.InvalidValue)}";
+
+            if (Translate(message, Translations.InvalidAttribute, out translation))
+                return $"{translation}{AddTranslation(message, Translations.InvalidValue)}{AddTranslation(message, Translations.InvalidCharacter)}";
+
+            if (Translate(message, Translations.RequiredAttributeMissing, out translation))
                 return translation;
 
             if (Translate(message, Translations.TextOnly, out translation))
@@ -51,28 +57,6 @@ namespace Arkitektum.XmlSchemaValidator.Translator
             return message;
         }
 
-        private static string AddListOfPossibleElements(string message)
-        {
-            var translation = string.Empty;
-            var matches = Translations.ListOfPossibleElements.Regex.Matches(message);
-
-            foreach (Match match in matches)
-                translation += FormatMessage(Translations.ListOfPossibleElements.Template, match);
-
-            return translation;
-        }
-
-        private static string AddOtherElements(string message)
-        {
-            var translation = string.Empty;
-            var matches = Translations.OtherElements.Regex.Matches(message);
-
-            foreach (Match match in matches)
-                translation += FormatMessage(Translations.OtherElements.Template, match);
-
-            return translation;
-        }
-
         private static bool Translate(string message, Translation translation, out string output)
         {
             output = null;
@@ -83,6 +67,22 @@ namespace Arkitektum.XmlSchemaValidator.Translator
 
             output = FormatMessage(translation.Template, match);
             return true;
+        }
+
+        private static string AddTranslation(string message, Translation translation)
+        {
+            return Translate(message, translation, out var translated) ? translated : "";
+        }
+
+        private static string AddTranslations(string message, Translation translation)
+        {
+            var translated = string.Empty;
+            var matches = translation.Regex.Matches(message);
+
+            foreach (Match match in matches)
+                translated += FormatMessage(translation.Template, match);
+
+            return translated;
         }
 
         private static string FormatMessage(string template, Match match)

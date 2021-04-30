@@ -47,6 +47,7 @@ namespace Arkitektum.XmlSchemaValidator.Validator
             
             xmlReaderSettings.Schemas.Add(xmlSchemaSet);
             xmlReaderSettings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
+            xmlReaderSettings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
             xmlReaderSettings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
             xmlReaderSettings.ValidationFlags &= ~XmlSchemaValidationFlags.ProcessIdentityConstraints;
             xmlReaderSettings.ValidationEventHandler += ValidationCallBack;

@@ -1,10 +1,10 @@
-# XSD Validator
+# Xml Schema Validator
 
 ### Oppsett (Startup.cs)
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddXsdValidator(options =>
+    services.AddXmlSchemaValidator(options =>
     {
         // XSD som Stream
         options.AddSchema(
@@ -19,14 +19,14 @@ public void ConfigureServices(IServiceCollection services)
             "http://skjema.geonorge.no/SOSITEST/produktspesifikasjon/Reguleringsplanforslag/5.0/reguleringsplanforslag-5.0_rev20210303.xsd"
         );
 
-        options.CacheFilesPath = Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Reguleringsplanforslag\\XSD"));
+        options.CacheFilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "XSD");
         options.CacheDurationDays = 14;
     });
 }
 
 public void Configure(IApplicationBuilder app)
 {
-    app.UseXsdValidator();
+    app.UseXmlSchemaValidator();
 }
 ```
 
@@ -39,7 +39,7 @@ public SchemaValidationService(IXsdValidator xsdValidator)
     _xsdValidator = xsdValidator;
 }
 
-public List<string> Validate(string key, Stream xmlStream)
+public List<string> Validate(object key, Stream xmlStream)
 {
    return _xsdValidator.Validate(key, xmlStream);
 }

@@ -12,14 +12,14 @@ namespace Arkitektum.XmlSchemaValidator.Models
         public string CacheFilesPath { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public bool CacheFiles { get; set; } = true;
 
-        public void AddSchema(string key, Stream xsdStream)
+        public void AddSchema(object key, Stream xsdStream)
         {
-            SchemaStreams.TryAdd(key, xsdStream);
+            SchemaStreams.TryAdd(key.ToString(), xsdStream);
         }
 
-        public void AddSchema(string key, string targetNamespace, string schemaUri)
+        public void AddSchema(object key, string targetNamespace, string schemaUri)
         {
-            SchemaUris.TryAdd(key, (targetNamespace, schemaUri));
+            SchemaUris.TryAdd(key.ToString(), (targetNamespace, schemaUri));
         }
     }
 }

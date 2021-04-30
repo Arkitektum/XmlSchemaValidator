@@ -41,9 +41,9 @@ namespace Arkitektum.XmlSchemaValidator.Provider
             }
         }
 
-        public XmlSchemaSet GetXmlSchemaSet(string key)
+        public XmlSchemaSet GetXmlSchemaSet(object key)
         {
-            return _schemaSets.TryGetValue(key, out var schemaSet) ? schemaSet : null;
+            return _schemaSets.TryGetValue(key.ToString(), out var schemaSet) ? schemaSet : null;
         }
 
         public void RebuildSchemaSets()
@@ -57,24 +57,25 @@ namespace Arkitektum.XmlSchemaValidator.Provider
             }
         }
 
-        public void RebuildSchemaSet(string key)
+        public void RebuildSchemaSet(object key)
         {
-            _logger.LogInformation($"Gjenoppbygger XmlSchemaSet for '{key}'...");
+            var keyStr = key.ToString();
+            _logger.LogInformation($"Gjenoppbygger XmlSchemaSet for '{keyStr}'...");
 
             lock (_schemaSetLock)
             {
-                var path = Path.GetFullPath(Path.Combine(_options.CacheFilesPath, key));
+                var path = Path.GetFullPath(Path.Combine(_options.CacheFilesPath, keyStr));
                 DeleteSchemaSets(path);
 
-                if (_options.SchemaStreams.TryGetValue(key, out var stream))
+                if (_options.SchemaStreams.TryGetValue(keyStr, out var stream))
                 {
-                    _options.SchemaStreams.Remove(key);
-                    _schemaSets.TryAdd(key, CreateSchemaSet(key, stream));
+                    _options.SchemaStreams.Remove(keyStr);
+                    _schemaSets.TryAdd(keyStr, CreateSchemaSet(keyStr, stream));
                 }
-                else if (_options.SchemaUris.TryGetValue(key, out var namespaceAndUri))
+                else if (_options.SchemaUris.TryGetValue(keyStr, out var namespaceAndUri))
                 {
-                    _options.SchemaUris.Remove(key);
-                    _schemaSets.TryAdd(key, CreateSchemaSet(key, namespaceAndUri.TargetNamespace, namespaceAndUri.SchemaUri));
+                    _options.SchemaUris.Remove(keyStr);
+                    _schemaSets.TryAdd(keyStr, CreateSchemaSet(keyStr, namespaceAndUri.TargetNamespace, namespaceAndUri.SchemaUri));
                 }
             }
         }
@@ -103,8 +104,7 @@ namespace Arkitektum.XmlSchemaValidator.Provider
 
         private XmlSchemaSet CreateSchemaSet(string key, Stream stream)
         {
-            var xmlResolver = _options.CacheFiles ? new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) : new XmlUrlResolver();
-            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = xmlResolver };
+            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = GetXmlResolver(key) };
             var xmlSchema = XmlSchema.Read(stream, null);
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -115,12 +115,19 @@ namespace Arkitektum.XmlSchemaValidator.Provider
 
         private XmlSchemaSet CreateSchemaSet(string key, string targetNamespace, string schemaUri)
         {
-            var xmlResolver = _options.CacheFiles ? new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays) : new XmlUrlResolver();
-            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = xmlResolver };
+            var xmlSchemaSet = new XmlSchemaSet { XmlResolver = GetXmlResolver(key) };
 
             xmlSchemaSet.Add(targetNamespace, schemaUri);
 
             return CompileSchemaSet(xmlSchemaSet);
+        }
+
+        private XmlResolver GetXmlResolver(string key)
+        {
+            if (_options.CacheFiles)
+                return new XmlFileCacheResolver(key, _options.CacheFilesPath, _options.CacheDurationDays);
+
+            return new XmlUrlResolver();
         }
 
         private XmlSchemaSet CompileSchemaSet(XmlSchemaSet xmlSchemaSet)

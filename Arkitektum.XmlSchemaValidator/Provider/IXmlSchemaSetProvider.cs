@@ -6,7 +6,7 @@ namespace Arkitektum.XmlSchemaValidator.Provider
     {
         void CreateSchemaSets();
         void RebuildSchemaSets();
-        void RebuildSchemaSet(string key);
-        XmlSchemaSet GetXmlSchemaSet(string key);
+        void RebuildSchemaSet(object key);
+        XmlSchemaSet GetXmlSchemaSet(object key);
     }
 }
